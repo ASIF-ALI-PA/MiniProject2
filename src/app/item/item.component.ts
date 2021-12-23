@@ -21,7 +21,7 @@ export class ItemComponent implements OnInit {
 
   onAssign(status: any) {
 
-    this.saService.onStatusChosen({name: this.student.name, status: status})
+    this.saService.onStatusChosen({name: this.student.name, status: status});
   }
 
 }

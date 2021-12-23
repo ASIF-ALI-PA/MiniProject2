@@ -1,19 +1,48 @@
-import { Component, OnInit,Input} from '@angular/core';
+import { Component, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { StudentAttendanceService } from '../student-attendance.service';
 
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.css']
 })
-export class ListComponent implements OnInit {
-  @Input () students: any;
+export class ListComponent implements OnInit, OnDestroy {
+  students: any =[] ;
+  activatedRoute: ActivatedRoute;
+  saService: StudentAttendanceService;
+  loadedStatus = 'all';
+  subscription:any ;
 
 
-  constructor() { }
+  constructor(activatedRoute: ActivatedRoute, saService:StudentAttendanceService) {
+    this.activatedRoute = activatedRoute;
+    this.saService = saService;
+
+   }
 
   ngOnInit(): void {
+    this.activatedRoute.params.subscribe(
+      (params:any)=>{
+        this.students = this.saService.getStudents(params.stat);
+        this.loadedStatus = params.status;
+
+      }
+    );
+    this.subscription = this.saService.studentsChanged.subscribe(
+      () => {
+        this.students= this.saService.getStudents(this.loadedStatus);
+      }
+    );
+
+
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+
   }
 
-  
+
 
 }
